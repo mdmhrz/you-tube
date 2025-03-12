@@ -1,10 +1,4 @@
-
-
-// {
-//     "category_id": "1001",
-//     "category": "Music"
-// }
-
+const videosContainer = document.getElementById('video-container')
 
 // For loading dynamic buttons
 const loadCategory = () => {
@@ -16,29 +10,46 @@ const loadCategory = () => {
 function displayCategory(data) {
     for (const cat of data) {
         const categoryBtnContainer = document.getElementById('category-btn-container');
-        const catBtn = document.createElement('div')
+        const catBtn = document.createElement('button')
         catBtn.innerHTML = `
-            <button class="btn btn-sm">${cat.category}</button>
+            <button onclick="loadMusicVideos()" class="btn btn-sm active">${cat.category}</button>
         `
         categoryBtnContainer.append(catBtn)
     }
 }
 
+const activeBtns = document.getElementsByClassName('active')
+for (let whitebtn of activeBtns) {
+    whitebtn.addEventListener('click', () => {
+        whitebtn.classList.add('red')
+    })
+}
+
+
+
+
 
 // For Loading Videos using API
-const loadVideos = () => {
+const loadAllVideos = () => {
     fetch('https://openapi.programming-hero.com/api/phero-tube/videos')
         .then((ref) => ref.json())
         .then((videosAPI) => showVideos(videosAPI.videos));
+    videosContainer.innerHTML = ''
 }
+
+const loadMusicVideos = () => {
+    fetch('https://openapi.programming-hero.com/api/phero-tube/category/1001')
+        .then((ref) => ref.json())
+        .then((videosAPI) => showVideos(videosAPI.category));
+    videosContainer.innerHTML = ''
+}
+
+
+
 
 function showVideos(videos) {
 
     for (const video of videos) {
-        const videosContainer = document.getElementById('video-container')
-        console.log(video);
-
-
         const newVideos = document.createElement('div')
         newVideos.innerHTML = `
             <div class="card bg-base-100 shadow-md">
@@ -55,9 +66,9 @@ function showVideos(videos) {
                     <div class="pb-3">
                         <h1 class="font-semibold text-xl">${video.title}</h1>
                         <div class="flex items-center gap-3">
-                            <p class="text-gray-500 font-medium">${video.authors[0].profile_name
-            }</p>
-                            <img src="https://cdn-icons-png.flaticon.com/128/7641/7641727.png" class="w-6" alt="">
+                            <p class="text-gray-500 font-medium">${video.authors[0].profile_name}</p>
+                            ${video.authors[0].verified === true ? `<img src="https://cdn-icons-png.flaticon.com/128/7641/7641727.png" class="w-6" alt="">` : ``}
+                            
                         </div>
                         <p class="text-gray-500">${video.others.views}</p>
                     </div>
@@ -66,19 +77,8 @@ function showVideos(videos) {
         `
         videosContainer.append(newVideos)
     }
-
-
 }
-
-
-
-
-
-
-
-
 
 
 // Call all the load function at below.
 loadCategory()
-loadVideos()
